@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cosmosdb-backup
+spec:
+  schedule: "0 2 * * *" # 每天凌晨2点
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: backup
+            image: backup-cosmosdb:latest # 请替换为实际镜像地址
+            volumeMounts:
+            - name: backup-storage
+              mountPath: /mnt/backup
+          restartPolicy: OnFailure
+          volumes:
+          - name: backup-storage
+            persistentVolumeClaim:
+              claimName: azurefile-backup-pvc # 需提前创建 
